@@ -14,6 +14,10 @@ setup(
     author='kiki-kanri',
     author_email='a470666@gmail.com',
     keywords=['Utils'],
-    install_requires=[],
+    install_requires=[
+        'kiki-utils',
+        'opencv-python',
+        'pillow'
+    ],
     python_requires=">=3.6"
 )
