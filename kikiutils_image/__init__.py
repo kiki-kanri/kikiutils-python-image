@@ -6,7 +6,7 @@ from PIL import Image
 from typing import Union
 
 from kikiutils.check import isbytes
-from kikiutils.file import get_file_mime, save_file, save_file_as_bytesio
+from kikiutils.file import async_save_file, get_file_mime, save_file, save_file_as_bytesio
 from kikiutils.requests import get_response
 
 
@@ -114,6 +114,34 @@ def get_image_dhash(
                 ('1' if image[i, j] > image[i, j + 1] else '0')
 
     return hash_str
+
+
+async def async_save_image(
+    image_file: Union[bytes, io.BytesIO, io.FileIO],
+    save_path: str,
+    format: str = 'webp',
+    image_mime: list[str] = None
+):
+    """Async save image."""
+
+    if image_file:
+        if getattr(image_file, 'read', None):
+            image_file = image_file.read()
+
+        if not image_mime:
+            image_mime = get_file_mime(image_file)
+
+        if image_mime[0] == 'image':
+            if image_mime[1] != format:
+                image_file = convert_image(
+                    image_file,
+                    format,
+                    get_bytes=True
+                )
+
+            return await async_save_file(save_path, image_file)
+
+    return False
 
 
 def save_image(
